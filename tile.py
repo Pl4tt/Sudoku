@@ -12,6 +12,7 @@ from constants import (
     SCREEN_HEIGHT,
     SUDOKU_HEIGHT,
     WHITE,
+    GRAY,
     GREEN,
     RED,
     FONT
@@ -24,6 +25,7 @@ class Tile:
         self.val = val
         self.changeable = changeable
         
+        self.backval = 0
         self.is_marked = False
         self.is_collision = False
     
@@ -38,11 +40,27 @@ class Tile:
     def on_click(self, x, y, window):
         self.toggle_marked(x, y, window)
 
-    def update(self, new_val, x, y, window):
+    def delete(self, x, y, window):
+        if not self.changeable:
+            return
+        
+        self.backval = 0
+        self.val = 0
+        self.draw(x, y, window)
+
+    def update_backval(self, new_val, x, y, window):
+        if not self.changeable:
+            return
+        
+        self.backval = new_val
+        self.draw(x, y, window)
+
+    def update(self, x, y, window):
         if not self.changeable:
             return False
 
-        self.val = new_val
+        self.val = self.backval
+        self.backval = 0
         self.draw(x, y, window)
 
         return True
@@ -84,8 +102,14 @@ class Tile:
         else:
             pygame.draw.rect(window, WHITE, (x, y, TILE_WIDTH, TILE_HEIGHT))
         
-        if self.val != 0:
-            font = pygame.font.SysFont(FONT, int(TILE_HEIGHT//2))
+        font = pygame.font.SysFont(FONT, int(TILE_HEIGHT//2))
+
+        if self.backval != 0:
+            text = font.render(str(self.backval), True, GRAY)
+            text_rect = text.get_rect()
+            text_rect.center = (x + TILE_WIDTH/2), (y + TILE_HEIGHT/2)
+            window.blit(text, text_rect)
+        elif self.val != 0:
             text = font.render(str(self.val), True, BLACK)
             text_rect = text.get_rect()
             text_rect.center = (x + TILE_WIDTH/2), (y + TILE_HEIGHT/2)

@@ -43,13 +43,13 @@ class InformationPanel:
         font = pygame.font.SysFont(FONT, int(TILE_HEIGHT//2))
         text = font.render(str(self.get_time()), True, BLACK)
         text_rect = text.get_rect()
-        text_rect.centery = SCREEN_HEIGHT - TILE_WIDTH/2
+        text_rect.centery = SCREEN_HEIGHT - TILE_HEIGHT/2
         text_rect.right = SUDOKU_WIDTH - TILE_WIDTH/2
         self.window.blit(text, text_rect)
 
         mistakes = font.render("X"*self.mistakes, True, RED)
         mistakes_rect = mistakes.get_rect()
-        mistakes_rect.centery = SCREEN_HEIGHT - TILE_WIDTH/2
+        mistakes_rect.centery = SCREEN_HEIGHT - TILE_HEIGHT/2
         mistakes_rect.left = TILE_WIDTH/2
         self.window.blit(mistakes, mistakes_rect)
         

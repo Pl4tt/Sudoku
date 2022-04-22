@@ -63,13 +63,50 @@ class Board:
         
         for rm in remove:
             self.invalids.remove(rm)
-
-    def update(self, new_val):
+        
+    def delete(self):
         if self.marked is None:
             return
 
         x, y = self.marked
         coordinate = coordinate_builder(x, y)
+
+        if not self.tiles[x][y].changeable:
+            return
+
+        self.tiles[x][y].delete(*coordinate, self.window)
+
+        self.board[x][y] = 0
+
+        self.clean_validation()
+        
+        self.tiles[x][y].draw(*coordinate, self.window)
+    
+    def update_backval(self, new_val):
+        if self.marked is None:
+            return
+
+        x, y = self.marked
+        coordinate = coordinate_builder(x, y)
+
+        if not self.tiles[x][y].changeable:
+            return
+
+        self.tiles[x][y].update_backval(new_val, *coordinate, self.window)
+
+    def update(self):
+        if self.marked is None:
+            return
+
+        x, y = self.marked
+        coordinate = coordinate_builder(x, y)
+
+        if not self.tiles[x][y].changeable:
+            return
+
+        new_val = self.tiles[x][y].backval
+        if new_val == 0:
+            return
 
         if not self.is_valid(x, y, new_val) and new_val != 0:
             self.information_panel.mistake()
@@ -82,11 +119,9 @@ class Board:
                 coords = coordinate_builder(ix, iy)
                 self.tiles[ix][iy].set_collision(True, *coords, self.window)
 
-        if self.tiles[x][y].update(new_val, *coordinate, self.window):
+        if self.tiles[x][y].update(*coordinate, self.window):
             self.board[x][y] = new_val
-        else:
-            self.information_panel.rm_mistake()
-
+            
         self.clean_validation()
 
         self.tiles[x][y].draw(*coordinate, self.window)

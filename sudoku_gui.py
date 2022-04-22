@@ -65,10 +65,13 @@ def launch(board_list):
                 
                 match key:
                     case 8 | 127 | 48:  # del / backspace / 0
-                        board.update(0)
+                        board.delete()
 
                     case num if 57 >= num >= 49:  # [1;9]
-                        if board.update(int(chr(num))):  # win
+                        board.update_backval(int(chr(num)))
+                    
+                    case pygame.K_RETURN:
+                        if board.update():  # win
                             draw_win(window)
                             print_board(board.board)
                             pygame.time.wait(10000)
