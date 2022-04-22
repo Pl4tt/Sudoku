@@ -5,6 +5,7 @@ from sudoku_solver import print_board, boards
 from constants import (
     FONT,
     WIN_FONT_SIZE,
+    RED,
     GREEN,
     SUDOKU_HEIGHT,
     SUDOKU_WIDTH,
@@ -19,6 +20,36 @@ from constants import (
 from information_panel import InformationPanel
 from board import Board
 
+
+def draw_level_selection(window):
+    font = pygame.font.SysFont(FONT, int(WIN_FONT_SIZE//2))
+    text = font.render("Enter the difficulty you want to play [1-3]", True, RED)
+    text_rect = text.get_rect()
+    text_rect.center = SUDOKU_WIDTH/2, SUDOKU_HEIGHT/2
+    window.blit(text, text_rect)
+
+    pygame.display.update()
+
+    level = None
+    while level is None:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == pygame.KEYDOWN:
+                match event.key:
+                    case num if 49 <= num <= 51:
+                        level = num-49
+                    
+                    case _:
+                        text = font.render("Number must be in the interval [1;3]", True, RED)
+                        text_rect = text.get_rect()
+                        text_rect.center = SUDOKU_WIDTH/2, SUDOKU_HEIGHT/2 + WIN_FONT_SIZE/2
+                        
+                        window.blit(text, text_rect)
+                        pygame.display.update()
+    
+    return level
 
 def draw_win(window):
     font = pygame.font.SysFont(FONT, WIN_FONT_SIZE)
@@ -36,11 +67,14 @@ def draw_win(window):
     pygame.display.update()
 
 
-def launch(board_list):
+def launch():
     pygame.init()
+
     
     window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(CAPTION)
+
+    board_list = boards[draw_level_selection(window)]
 
     start_time = time.time()
     information_panel = InformationPanel(0, start_time, window)
@@ -83,10 +117,4 @@ def launch(board_list):
 
 
 
-if __name__ == "__main__":
-    level = int(input("Enter the difficulty you want to play [1-3] "))
-
-    if level < 1 or level > 3:
-        raise Exception("difficulty must be 1, 2 or 3")
-
-    launch(boards[level-1])
+if __name__ == "__main__": launch()
